@@ -1,0 +1,22 @@
+services:
+  backend:
+    build: ./BetterBeerBackend
+    container_name: BetterBeerBackend
+    volumes:
+      # Read-only access to shared folder
+      - shared-data:/app/images:ro
+    ports:
+      - "3000:3000"
+    # environment:
+    #   - ENV_VAR=value
+  data-collector:
+    build: ./goDataCollection # Uses your Dockerfile
+    container_name: goDataCollection
+    volumes:
+      # Read-write access to shared folder
+      - shared-data:/app/images
+    restart: unless-stopped
+
+volumes:
+  shared-data:
+    driver: local

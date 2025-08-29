@@ -1,6 +1,8 @@
 [submodule "BetterBeerBackend"]
 	path = BetterBeerBackend
 	url = git@github.com:igtl314/BetterBeerBackend.git
+	branch = main
 [submodule "goDataCollection"]
 	path = goDataCollection
 	url = git@github.com:igtl314/goDataCollection.git
+	branch = main

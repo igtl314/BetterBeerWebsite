@@ -6,3 +6,7 @@
 	path = goDataCollection
 	url = git@github.com:igtl314/goDataCollection.git
 	branch = main
+[submodule "betterbeerfrontend"]
+	path = betterbeerfrontend
+	url = git@github.com:igtl314/betterbeerfrontend.git
+	branch = main

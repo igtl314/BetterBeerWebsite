@@ -6,7 +6,7 @@ services:
       # Read-only access to shared folder
       - shared-data:/app/images:ro
     ports:
-      - "3000:3000"
+      - "3005:3000"
     # environment:
     #   - ENV_VAR=value
   data-collector:

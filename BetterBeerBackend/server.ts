@@ -13,7 +13,8 @@ import {
     getUserById,
     getUserFavorites,
     addToFavorites,
-    removeFromFavorites
+    removeFromFavorites,
+    upsertUser
 } from './storehandler';
 
 import { type Product, type StockInfo } from './types';
@@ -282,6 +283,24 @@ const app = new Elysia()
             params: t.Object({
                 userId: t.String(),
                 productId: t.String()
+            })
+        })
+
+        // Upsert user by email (used by Auth.js on SSO login)
+        .post('/upsert', async ({ body }) => {
+            try {
+                const user = await upsertUser(body.email, body.name ?? null);
+                return new Response(JSON.stringify(user), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch (error) {
+                return new Response('Failed to upsert user', { status: 400 });
+            }
+        }, {
+            body: t.Object({
+                email: t.String(),
+                name: t.Optional(t.String())
             })
         })
 

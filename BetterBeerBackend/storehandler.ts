@@ -250,6 +250,14 @@ export async function removeFromFavorites(userId: number, productId: number) {
     });
 }
 
+export async function upsertUser(email: string, name: string | null) {
+    return prisma.user.upsert({
+        where: { email },
+        update: { name: name ?? undefined },
+        create: { email, name },
+    });
+}
+
 /**
  * Get all favorite products for a user
  */

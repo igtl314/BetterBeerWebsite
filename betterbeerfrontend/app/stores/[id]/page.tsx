@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { StockInfoWithProduct, Store } from "@/types/store";
 import { Beer } from "@/types/beer";
 import BeerCard from "../../_compoments/BeerCard";
@@ -118,9 +118,9 @@ export default function StorePage() {
                   selectedKeys={[itemsPerPage === 0 ? "all" : itemsPerPage.toString()]}
                   onChange={(e) => handleItemsPerPageChange(e.target.value)}
                 >
-                  <SelectItem key="30" value="30">30</SelectItem>
-                  <SelectItem key="50" value="50">50</SelectItem>
-                  <SelectItem key="all" value="all">All</SelectItem>
+                  <SelectItem key="30">30</SelectItem>
+                  <SelectItem key="50">50</SelectItem>
+                  <SelectItem key="all">All</SelectItem>
                 </Select>
               </div>
               <div className="text-sm text-default-600">

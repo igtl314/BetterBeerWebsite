@@ -1,0 +1,5 @@
+test
+./images/*
+go.sum
+hello.old
+images/*

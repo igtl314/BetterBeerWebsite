@@ -1,0 +1,36 @@
+FROM golang:1.19
+
+# Install cron
+RUN apt-get update && apt-get install -y cron && rm -rf /var/lib/apt/lists/*
+
+# Set destination for COPY
+WORKDIR /app
+RUN mkdir -p /app/images
+
+# Download Go modules
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy the source code
+COPY *.go ./
+
+# Build
+RUN go build -o /app/goDataCollection
+
+# Set the entrypoint to the built binary
+#ENTRYPOINT ["/app/goDataCollection"]
+
+# Create cron job file
+RUN echo "0 */12 * * * /app/goDataCollection >> /var/log/cron.log 2>&1" > /etc/cron.d/data-collection
+
+# Give execution rights on the cron job
+RUN chmod 0644 /etc/cron.d/data-collection
+
+# Apply cron job
+RUN crontab /etc/cron.d/data-collection
+
+# Create log file
+RUN touch /var/log/cron.log
+
+# Run cron in foreground
+CMD cron && tail -f /var/log/cron.log

@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "linux-arm64-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./prod.db" 
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  name      String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  favorites Product[] @relation("UserFavorites")
+}
+
+model Product {
+  ID                Int         @id @default(autoincrement())
+  ProductName       String
+  ProductNameThin   String
+  ProductCountry    String
+  ProductCategory   String
+  ProductInfo       String
+  ProductImageURL   String
+  ProductVolume     Float
+  ProductPrice      Float
+  ProductAlcohol    Float
+  ProductApk        Float
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  stockInfo         StockInfo[]
+  stores            Store[]     @relation("ProductToStore")
+  favoritedBy       User[]      @relation("UserFavorites")
+
+  @@index([ProductApk])
+  @@index([ProductPrice])
+  @@index([ProductCategory])
+
+}
+
+model Store {
+  id        Int         @id @default(autoincrement())
+  name      String
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  stockInfo StockInfo[]
+  products  Product[]   @relation("ProductToStore")
+
+  @@index([name])
+
+}
+
+model StockInfo {
+  ID        Int      @id @default(autoincrement())
+  StoreId   Int
+  ProductId Int
+  Location  String
+  Stock     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  product   Product  @relation(fields: [ProductId], references: [ID], onDelete: Cascade)
+  store     Store    @relation(fields: [StoreId], references: [id], onDelete: Cascade)
+
+  @@unique([StoreId, ProductId])
+  @@index([ProductId])
+  @@index([StoreId])
+}

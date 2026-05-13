@@ -54,17 +54,17 @@ const config: runtime.GetPrismaClientConfig = {
     "db"
   ],
   "activeProvider": "sqlite",
-  "postinstall": false,
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {
-        "fromEnvVar": null,
-        "value": "file:./prod.db"
+        "fromEnvVar": "DATABASE_URL",
+        "value": null
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"linux-arm64-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = \"file:./prod.db\"\n}\n\nmodel User {\n  id        Int       @id @default(autoincrement())\n  email     String    @unique\n  name      String?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  favorites Product[] @relation(\"UserFavorites\")\n}\n\nmodel Product {\n  ID              Int         @id @default(autoincrement())\n  ProductName     String\n  ProductNameThin String\n  ProductCountry  String\n  ProductCategory String\n  ProductInfo     String\n  ProductImageURL String\n  ProductVolume   Float\n  ProductPrice    Float\n  ProductAlcohol  Float\n  ProductApk      Float\n  createdAt       DateTime    @default(now())\n  updatedAt       DateTime    @updatedAt\n  stockInfo       StockInfo[]\n  stores          Store[]     @relation(\"ProductToStore\")\n  favoritedBy     User[]      @relation(\"UserFavorites\")\n\n  @@index([ProductApk])\n  @@index([ProductPrice])\n  @@index([ProductCategory])\n}\n\nmodel Store {\n  id        Int         @id @default(autoincrement())\n  name      String\n  createdAt DateTime    @default(now())\n  updatedAt DateTime    @updatedAt\n  stockInfo StockInfo[]\n  products  Product[]   @relation(\"ProductToStore\")\n\n  @@index([name])\n}\n\nmodel StockInfo {\n  ID        Int      @id @default(autoincrement())\n  StoreId   Int\n  ProductId Int\n  Location  String\n  Stock     Int\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  product   Product  @relation(fields: [ProductId], references: [ID], onDelete: Cascade)\n  store     Store    @relation(fields: [StoreId], references: [id], onDelete: Cascade)\n\n  @@unique([StoreId, ProductId])\n  @@index([ProductId])\n  @@index([StoreId])\n}\n",
-  "inlineSchemaHash": "cb5295a0c9cee89eca79418db8cf19909e0b4b3765e0f5e10f222ec4ae89cdd6",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client\"\n  output        = \"../generated/prisma\"\n  binaryTargets = [\"native\", \"debian-openssl-3.0.x\", \"linux-arm64-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        Int       @id @default(autoincrement())\n  email     String    @unique\n  name      String?\n  createdAt DateTime  @default(now())\n  updatedAt DateTime  @updatedAt\n  favorites Product[] @relation(\"UserFavorites\")\n}\n\nmodel Product {\n  ID              Int         @id @default(autoincrement())\n  ProductName     String\n  ProductNameThin String\n  ProductCountry  String\n  ProductCategory String\n  ProductInfo     String\n  ProductImageURL String\n  ProductVolume   Float\n  ProductPrice    Float\n  ProductAlcohol  Float\n  ProductApk      Float\n  createdAt       DateTime    @default(now())\n  updatedAt       DateTime    @updatedAt\n  stockInfo       StockInfo[]\n  stores          Store[]     @relation(\"ProductToStore\")\n  favoritedBy     User[]      @relation(\"UserFavorites\")\n\n  @@index([ProductApk])\n  @@index([ProductPrice])\n  @@index([ProductCategory])\n}\n\nmodel Store {\n  id        Int         @id @default(autoincrement())\n  name      String\n  createdAt DateTime    @default(now())\n  updatedAt DateTime    @updatedAt\n  stockInfo StockInfo[]\n  products  Product[]   @relation(\"ProductToStore\")\n\n  @@index([name])\n}\n\nmodel StockInfo {\n  ID        Int      @id @default(autoincrement())\n  StoreId   Int\n  ProductId Int\n  Location  String\n  Stock     Int\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  product   Product  @relation(fields: [ProductId], references: [ID], onDelete: Cascade)\n  store     Store    @relation(fields: [StoreId], references: [id], onDelete: Cascade)\n\n  @@unique([StoreId, ProductId])\n  @@index([ProductId])\n  @@index([StoreId])\n}\n",
+  "inlineSchemaHash": "273f0e86d856d14d19f9d492ebebfd9ee98e2f83f05bd2b6fb9f4ae84fbf1f83",
   "copyEngine": true,
   "runtimeDataModel": {
     "models": {},

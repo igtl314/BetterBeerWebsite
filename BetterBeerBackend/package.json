@@ -3,6 +3,9 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "scripts": {
+    "test": "DATABASE_URL='file:./test.db' bunx prisma migrate deploy && DATABASE_URL='file:./test.db' bun test"
+  },
   "devDependencies": {
     "@types/bun": "latest",
     "prisma": "^6.16.2"

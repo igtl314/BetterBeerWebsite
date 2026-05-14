@@ -34,6 +34,24 @@ func ImageDownload(product Product, headers *http.Header) []byte {
 	}
 }
 
+func FetchStoreName(storeID int, headers *http.Header) Store {
+	if name, ok := storeNames[storeID]; ok {
+		return Store{StoreID: storeID, StoreName: name}
+	}
+	storeURL := fmt.Sprintf("https://api-extern.systembolaget.se/sb-api-ecommerce/v1/store/%04d", storeID)
+	body, err := MakeRequest("GET", storeURL, "", "", *headers)
+	if err != nil {
+		fmt.Println("Error fetching store info:", err)
+		return Store{StoreID: storeID, StoreName: fmt.Sprintf("%d", storeID)}
+	}
+	var storeResp StoreResponse
+	if err := json.Unmarshal(body, &storeResp); err != nil {
+		fmt.Println("Error unmarshalling store info:", err)
+		return Store{StoreID: storeID, StoreName: fmt.Sprintf("%d", storeID)}
+	}
+	return Store{StoreID: storeID, StoreName: storeResp.StoreName}
+}
+
 func FetchStockInfo(product Product, headers *http.Header) StockInfo {
 	var StockResponse StockInfo
 	var defaultStockResponse = StockInfo{
@@ -70,13 +88,8 @@ func FetchProductData(product Product, wg *sync.WaitGroup, headers *http.Header,
 		imageData = ImageDownload(product, headers)
 		//product.ProductImageURL = SaveImageToS3(product, imageData)
 		SaveToFile(filename, imageData)
-		product.ProductImageURL = fmt.Sprintf("%d.webp", product.ProductID)
-
-	} else if product.ProductImageURL == "" {
-		product.ProductImageURL = "no_image.webp"
-	} else {
-		product.ProductImageURL = fmt.Sprintf("%d.webp", product.ProductID)
 	}
+	product.ProductImageURL = fmt.Sprintf("%d.webp", product.ProductID)
 
 	apk = (product.ProductAlcohol / 100 * product.ProductVolume) / product.ProductPrice
 	product.ProductApk = RoundToDecimal(apk, 1)

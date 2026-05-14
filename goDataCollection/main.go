@@ -14,6 +14,19 @@ type StockInfo struct {
 	Shelf string `json:"shelf"`
 }
 
+type Store struct {
+	StoreID   int
+	StoreName string
+}
+
+type StoreResponse struct {
+	StoreName string `json:"alias"`
+}
+
+var storeNames = map[int]string{
+	525: "Djurgården",
+}
+
 type Response struct {
 	StoreID  string
 	Products []Product `json:"products"`
@@ -107,15 +120,16 @@ func main() {
 	}()
 
 	/*For loop*/
-	for _, store := range stores {
+	for _, storeID := range stores {
+		store := FetchStoreName(storeID, &headers)
 		/*Comment out for testing*/
 		AddStoreToDatabase(store)
 
-		//storestr := fmt.Sprintf("storeId=%s", store)
-		queryParameters := fmt.Sprintf("storeId=%04d%s", store, filterString)
+		//storestr := fmt.Sprintf("storeId=%s", storeID)
+		queryParameters := fmt.Sprintf("storeId=%04d%s", storeID, filterString)
 		for page != -1 {
 
-			fmt.Println("Store:", store, "Page:", page)
+			fmt.Println("Store:", storeID, "Page:", page)
 			querystring := fmt.Sprintf("%s&page=%d", queryParameters, page)
 
 			body, _ := MakeRequest("GET", url, querystring, payload, headers)
@@ -129,7 +143,7 @@ func main() {
 			for _, Product := range Response.Products {
 
 				wg.Add(1)
-				Product.StoreID = store
+				Product.StoreID = storeID
 				productsInStore = append(productsInStore, Product.ProductID)
 				go FetchProductData(Product, &wg, &headers, &databasewg, productChan)
 			}
@@ -145,7 +159,7 @@ func main() {
 			time.Sleep(1 * time.Second)
 		}
 		time.Sleep(2 * time.Second)
-		fmt.Println("Done with store:", store, "products in store:", len(productsInStore))
+		fmt.Println("Done with store:", storeID, "products in store:", len(productsInStore))
 
 		wg.Wait()
 		databasewg.Wait()

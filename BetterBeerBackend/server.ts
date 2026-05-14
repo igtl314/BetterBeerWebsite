@@ -322,6 +322,18 @@ const app = new Elysia()
             })
         })
     )
+    // TODO: replace with S3 bucket (AWS) for image storage
+    .get('/images/:filename', async ({ params: { filename } }: { params: { filename: string } }) => {
+        const file = Bun.file(`/app/images/${filename}`);
+        if (!(await file.exists())) {
+            return new Response('Image not found', { status: 404 });
+        }
+        return new Response(file, {
+            headers: { 'Content-Type': 'image/webp' }
+        });
+    }, {
+        params: t.Object({ filename: t.String() })
+    })
     // Start the server
     .listen(3000);
 

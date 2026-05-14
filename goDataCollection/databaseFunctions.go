@@ -13,13 +13,13 @@ var backendURL = "http://backend:3000"
 /*For testing*/
 //var backendURL = "http://localhost:3000"
 
-func AddStoreToDatabase(store int) {
+func AddStoreToDatabase(store Store) {
 
 	jsonData := map[string]interface{}{
-		"id":   store,
-		"name": "marcus hatar det här",
+		"id":   store.StoreID,
+		"name": store.StoreName,
 	}
-	fmt.Println("Adding store to database with ID:", store)
+	fmt.Println("Adding store to database with ID:", store.StoreID)
 
 	// Marshal the map to JSON bytes
 	jsonBytes, err := json.Marshal(jsonData)

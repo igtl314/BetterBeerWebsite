@@ -4,17 +4,16 @@ import Image from "next/image";
 import No_Image_available from "../../public/No_Image_Available.webp";
 
 function BeerCard({ beer }: { beer: Beer }) {
-  console.log("Rendering BeerCard for:", beer.ProductImageURL);
   return (
     <Card className="w-full hover:shadow-xl transition-all duration-180 hover:scale-[1.02] bg-white/80 backdrop-blur-sm flex flex-col">
       <CardBody className="p-0 flex-grow">
         <div className="relative overflow-hidden">
           <Image
-            src={No_Image_available}
+            src={beer.ProductImageURL || No_Image_available}
             alt={beer.ProductName}
             width={400}
             height={300}
-            className="w-full h-56 object-cover transition-transform duration-180 hover:scale-110"
+className="w-full h-56 object-cover transition-transform duration-180 hover:scale-110"
           />
           <div className="absolute top-3 right-3 bg-primary-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
             ${beer.ProductPrice.toFixed(2)}

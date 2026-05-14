@@ -25,5 +25,15 @@ export async function fetchStoreById(id: string): Promise<StoreWithStockInfo> {
   const response = await fetch(process.env.BACKEND_URL + `/stores/${id}`);
   if (response.status === 404) throw new Error('store not found 404');
   if (!response.ok) throw new Error(`backend error ${response.status}`);
-  return response.json();
+  const data: StoreWithStockInfo = await response.json();
+  data.stockInfo = data.stockInfo.map(item => ({
+    ...item,
+    product: {
+      ...item.product,
+      ProductImageURL: item.product.ProductImageURL && item.product.ProductImageURL !== 'no_image.webp'
+        ? `/api/images/${item.product.ProductImageURL}`
+        : '',
+    },
+  }));
+  return data;
 }

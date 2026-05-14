@@ -34,7 +34,7 @@ func AddStoreToDatabase(store int) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
 		fmt.Printf("Unexpected status code adding store to database: %d\n", resp.StatusCode)
 		return
 	}
@@ -104,8 +104,8 @@ func AddStockInfoToDatabase(ProductStockInfo StockInfo, storeID int, productId i
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		fmt.Printf("Unexpected status code adding stock info to database: %d\n, %v", resp.StatusCode, resp)
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		fmt.Printf("Unexpected status code adding stock info to database: %d\n", resp.StatusCode)
 		return
 	}
 }

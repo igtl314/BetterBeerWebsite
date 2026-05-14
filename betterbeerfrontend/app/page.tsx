@@ -1,56 +1,211 @@
 import { Store } from "@/types/store";
-import StoreCard from "./_compoments/StoreCard";
 import { fetchStores } from "./_actions/stores";
+import IndexFooter from "./_compoments/IndexFooter";
+import Link from "next/link";
 
 export default async function Home() {
   let stores: Store[] = [];
-  let error: string | null = null;
 
   try {
-    console.log('Fetching stores'); 
     stores = await fetchStores();
-  } catch (err) {
-    error = err instanceof Error ? err.message : 'An error occurred';
+  } catch {
+    // show empty state below
   }
 
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="text-center p-8 bg-white rounded-lg shadow-lg max-w-md">
-          <div className="text-6xl mb-4">⚠️</div>
-          <h2 className="text-2xl font-bold text-danger-600 mb-3">Error</h2>
-          <p className="text-default-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
+  // Group by city if available (our Store type only has id + name for now)
+  // Show stores in a flat grid
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-gray-100">
-      <div className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Better Beer Stores
+    <main>
+      {/* Hero */}
+      <section style={{
+        padding: '40px 56px 48px',
+        borderBottom: '1px solid var(--idx-line)',
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr',
+        gap: 64,
+      }}>
+        <div>
+          <div style={{
+            fontFamily: 'var(--font-geist-mono)',
+            fontSize: 10,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--idx-fg-dim)',
+          }}>
+            SE · Systembolaget · Beer Index
+          </div>
+          <h1 style={{
+            fontWeight: 500,
+            letterSpacing: '-0.045em',
+            fontSize: 'clamp(56px, 6.5vw, 96px)',
+            lineHeight: 0.92,
+            margin: '16px 0 0',
+            fontFeatureSettings: '"ss01","cv11"',
+          }}>
+            The index of{' '}
+            <span style={{ color: 'var(--idx-accent)' }}>good</span>
+            <br />beer in Sweden.
           </h1>
-          <p className="text-xl text-default-600 max-w-2xl mx-auto">
-            Discover amazing beer selections at stores near you
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+          <p style={{
+            fontSize: 18,
+            lineHeight: 1.5,
+            color: 'var(--idx-fg-dim)',
+            maxWidth: 480,
+            margin: 0,
+          }}>
+            Live stock and prices from{' '}
+            {stores.length > 0 ? stores.length : '—'} Systembolaget stores, ranked by APK — alkohol per krona — so you find what&apos;s worth the trip.
           </p>
+          <div style={{
+            display: 'flex',
+            gap: 36,
+            marginTop: 32,
+            paddingTop: 24,
+            borderTop: '1px solid var(--idx-line)',
+          }}>
+            <StatCell value={stores.length > 0 ? String(stores.length) : '—'} label="Stores" />
+            <StatCell value="APK" label="Ranked by value" accent />
+            <StatCell value="Live" label="Stock data" />
+          </div>
+        </div>
+      </section>
+
+      {/* Store directory */}
+      <section style={{ padding: '48px 56px 80px' }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          marginBottom: 28,
+        }}>
+          <h2 style={{
+            fontWeight: 500,
+            letterSpacing: '-0.045em',
+            fontSize: 48,
+            margin: 0,
+            fontFeatureSettings: '"ss01","cv11"',
+          }}>
+            Browse by store
+          </h2>
+          <div style={{
+            fontFamily: 'var(--font-geist-mono)',
+            fontSize: 10,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--idx-fg-dim)',
+          }}>
+            {stores.length} stores
+          </div>
         </div>
 
         {stores.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-6xl mb-4">🍺</div>
-            <p className="text-xl text-default-500">No stores available at the moment</p>
-            <p className="text-sm text-default-400 mt-2">Check back soon for updates!</p>
+          <div style={{
+            padding: '80px 0',
+            textAlign: 'center',
+            color: 'var(--idx-fg-dim)',
+            fontFamily: 'var(--font-geist-mono)',
+            fontSize: 11,
+            letterSpacing: '0.1em',
+            borderTop: '1px solid var(--idx-line)',
+          }}>
+            NO STORES AVAILABLE · CHECK BACKEND CONNECTION
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {stores.map((store) => (
-              <StoreCard key={store.id} store={store} />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            borderTop: '1px solid var(--idx-line-strong)',
+            borderLeft: '1px solid var(--idx-line)',
+          }}>
+            {stores.map(s => (
+              <StoreCell key={s.id} store={s} />
             ))}
           </div>
         )}
+      </section>
+
+      <IndexFooter />
+    </main>
+  );
+}
+
+function StatCell({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
+  return (
+    <div>
+      <div style={{
+        fontWeight: 500,
+        letterSpacing: '-0.045em',
+        fontSize: 32,
+        fontFeatureSettings: '"ss01","cv11"',
+        fontFamily: 'var(--font-geist-mono)',
+        fontVariantNumeric: 'tabular-nums',
+        color: accent ? 'var(--idx-accent)' : 'var(--idx-fg)',
+      }}>
+        {value}
+      </div>
+      <div style={{
+        fontFamily: 'var(--font-geist-mono)',
+        fontSize: 10,
+        letterSpacing: '0.14em',
+        textTransform: 'uppercase',
+        color: 'var(--idx-fg-dim)',
+        marginTop: 4,
+      }}>
+        {label}
       </div>
     </div>
+  );
+}
+
+function StoreCell({ store }: { store: Store }) {
+  return (
+    <Link
+      href={`/stores/${store.id}`}
+      className="idx-store-cell"
+      style={{
+        padding: '20px 22px',
+        borderBottom: '1px solid var(--idx-line)',
+        borderRight: '1px solid var(--idx-line)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 8,
+        textDecoration: 'none',
+        color: 'inherit',
+        transition: 'background 0.1s',
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+      }}>
+        <div style={{
+          fontWeight: 500,
+          letterSpacing: '-0.03em',
+          fontSize: 20,
+          fontFeatureSettings: '"ss01","cv11"',
+        }}>
+          {store.name}
+        </div>
+        <div style={{
+          fontSize: 18,
+          color: 'var(--idx-accent)',
+          fontWeight: 600,
+        }}>
+          →
+        </div>
+      </div>
+      <div style={{
+        fontFamily: 'var(--font-geist-mono)',
+        fontSize: 11,
+        color: 'var(--idx-fg-faint)',
+        letterSpacing: '0.02em',
+      }}>
+        Store #{store.id}
+      </div>
+    </Link>
   );
 }

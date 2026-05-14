@@ -22,15 +22,8 @@ export async function fetchStores(): Promise<Store[]> {
 }
 
 export async function fetchStoreById(id: string): Promise<StoreWithStockInfo> {
-  try {
-    const response = await fetch(process.env.BACKEND_URL + `/stores/${id}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch store');
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching store:', error);
-    throw new Error('Failed to fetch store');
-  }
+  const response = await fetch(process.env.BACKEND_URL + `/stores/${id}`);
+  if (response.status === 404) throw new Error('store not found 404');
+  if (!response.ok) throw new Error(`backend error ${response.status}`);
+  return response.json();
 }

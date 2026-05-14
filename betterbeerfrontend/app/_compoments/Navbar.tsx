@@ -1,201 +1,169 @@
 'use client';
 
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-  NavbarMenuToggle,
-  NavbarMenu,
-  NavbarMenuItem,
-  Link,
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Avatar,
-} from "@heroui/react";
-import { useState } from "react";
-import { Store } from "@/types/store";
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
-interface NavbarComponentProps {
-  stores: Store[];
+interface NavbarProps {
   isLoggedIn?: boolean;
-  userProfile?: {
-    name: string;
-    email: string;
-    avatarUrl?: string;
-  };
+  userName?: string;
 }
 
-export default function NavbarComponent({ 
-  stores, 
-  isLoggedIn = false, 
-  userProfile 
-}: NavbarComponentProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+const NAV_ITEMS = [
+  { label: 'Browse', href: '/' },
+  { label: 'Stores', href: '/stores' },
+  { label: 'Leaderboard', href: '/leaderboard' },
+  { label: 'Map', href: '/map' },
+  { label: 'Compare', href: '/compare' },
+];
+
+function initials(name: string): string {
+  return name.split(' ').map(p => p[0]).slice(0, 2).join('').toUpperCase();
+}
+
+export default function Navbar({ isLoggedIn = false, userName }: NavbarProps) {
+  const pathname = usePathname();
+
+  const active =
+    pathname === '/' ? 'Browse' :
+    pathname.startsWith('/stores') ? 'Stores' :
+    pathname.startsWith('/leaderboard') ? 'Leaderboard' :
+    pathname.startsWith('/map') ? 'Map' :
+    pathname.startsWith('/compare') ? 'Compare' : '';
 
   return (
-    <Navbar onMenuOpenChange={setIsMenuOpen} isBordered maxWidth="xl" className="bg-white/80 backdrop-blur-md shadow-sm">
-      <NavbarContent>
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="sm:hidden"
-        />
-        <NavbarBrand>
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-2xl">🍺</span>
-            <span className="font-bold text-xl bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
-              BETTER BEER
+    <header style={{
+      borderBottom: '1px solid var(--idx-line)',
+      background: 'var(--idx-bg)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 50,
+    }}>
+      {/* Utility row */}
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '8px 56px',
+        borderBottom: '1px solid var(--idx-line)',
+        fontSize: 11,
+        fontFamily: 'var(--font-geist-mono)',
+        color: 'var(--idx-fg-dim)',
+        letterSpacing: '0.04em',
+      }}>
+        <span>SE · ENGLISH · SYSTEMBOLAGET DATA</span>
+        <span>HJÄLP · FEEDBACK · INSTÄLLNINGAR</span>
+      </div>
+
+      {/* Main nav row */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '20px 56px',
+      }}>
+        {/* Left: logo + nav */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 48 }}>
+          <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <Link href="/" style={{
+              fontWeight: 500,
+              letterSpacing: '-0.045em',
+              fontSize: 24,
+              color: 'var(--idx-fg)',
+              textDecoration: 'none',
+              fontFeatureSettings: '"ss01","cv11"',
+            }}>
+              BetterBeer
+            </Link>
+            <span style={{
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 10,
+              color: 'var(--idx-fg-faint)',
+              padding: '2px 6px',
+              border: '1px solid var(--idx-line)',
+            }}>
+              BETA
             </span>
-          </Link>
-        </NavbarBrand>
-      </NavbarContent>
+          </div>
 
-      <NavbarContent className="hidden sm:flex gap-6" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="/" className="font-medium hover:text-primary transition-colors">
-            Home
-          </Link>
-        </NavbarItem>
-        <Dropdown>
-          <NavbarItem>
-            <DropdownTrigger>
-              <Button
-                disableRipple
-                className="p-0 bg-transparent data-[hover=true]:bg-transparent font-medium"
-                radius="sm"
-                variant="light"
-                endContent={<span className="text-xs">▼</span>}
-              >
-                Stores
-              </Button>
-            </DropdownTrigger>
-          </NavbarItem>
-          <DropdownMenu
-            aria-label="Store selection"
-            className="w-[340px]"
-            itemClasses={{
-              base: "gap-4 data-[hover=true]:bg-primary-50",
-            }}
-          >
-            {stores.length === 0 ? (
-              <DropdownItem key="no-stores" isReadOnly>
-                No stores available
-              </DropdownItem>
-            ) : (
-              stores.map((store) => (
-                <DropdownItem
-                  key={store.id}
-                  href={`/stores/${store.id}`}
-                  description={`View ${store.name}'s beer selection`}
-                >
-                  {store.name}
-                </DropdownItem>
-              ))
-            )}
-          </DropdownMenu>
-        </Dropdown>
-      </NavbarContent>
+          <nav style={{ display: 'flex', gap: 4, fontSize: 13 }}>
+            {NAV_ITEMS.map(({ label, href }) => {
+              const isActive = label === active;
+              return (
+                <Link key={label} href={href} className="idx-nav-link" style={{
+                  padding: '7px 13px',
+                  background: isActive ? 'var(--idx-fg)' : 'transparent',
+                  color: isActive ? 'var(--idx-bg)' : 'var(--idx-fg-dim)',
+                  textDecoration: 'none',
+                  display: 'block',
+                }}>
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
 
-      <NavbarContent as="div" justify="end">
-        {isLoggedIn && userProfile ? (
-          <Dropdown placement="bottom-end">
-            <DropdownTrigger>
-              <Avatar
-                isBordered
-                as="button"
-                className="transition-transform"
-                color="primary"
-                name={userProfile.name}
-                size="sm"
-                src={userProfile.avatarUrl}
-              />
-            </DropdownTrigger>
-            <DropdownMenu aria-label="Profile Actions" variant="flat">
-              <DropdownItem key="profile" className="h-14 gap-2">
-                <p className="font-semibold">Signed in as</p>
-                <p className="font-semibold">{userProfile.email}</p>
-              </DropdownItem>
-              <DropdownItem key="my-profile" href="/profile">
-                My Profile
-              </DropdownItem>
-              <DropdownItem key="settings">Settings</DropdownItem>
-              <DropdownItem key="logout" color="danger">
-                Log Out
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        ) : (
-          <NavbarItem>
-            <Button as={Link} color="primary" href="/login" variant="shadow" className="font-semibold">
-              Sign In
-            </Button>
-          </NavbarItem>
-        )}
-      </NavbarContent>
+        {/* Right: search + account */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '9px 14px',
+            border: '1px solid var(--idx-line)',
+            fontSize: 13,
+            color: 'var(--idx-fg-dim)',
+            width: 260,
+            background: 'var(--idx-bg)',
+            cursor: 'default',
+          }}>
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
+              <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" />
+              <path d="M9 9 12 12" stroke="currentColor" strokeLinecap="round" />
+            </svg>
+            <span style={{ flex: 1 }}>Search beers…</span>
+            <span style={{
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 10,
+              padding: '1px 5px',
+              background: 'var(--idx-bg3)',
+              color: 'var(--idx-fg)',
+            }}>⌘K</span>
+          </div>
 
-      <NavbarMenu>
-        <NavbarMenuItem>
-          <Link
-            color="foreground"
-            className="w-full"
-            href="/"
-            size="lg"
-          >
-            Home
-          </Link>
-        </NavbarMenuItem>
-        <NavbarMenuItem>
-          <p className="text-sm font-semibold text-default-500 mt-4 mb-2">STORES</p>
-        </NavbarMenuItem>
-        {stores.length === 0 ? (
-          <NavbarMenuItem>
-            <p className="text-sm text-default-400">No stores available</p>
-          </NavbarMenuItem>
-        ) : (
-          stores.map((store) => (
-            <NavbarMenuItem key={store.id}>
-              <Link
-                color="foreground"
-                className="w-full"
-                href={`/stores/${store.id}`}
-                size="lg"
-              >
-                {store.name}
-              </Link>
-            </NavbarMenuItem>
-          ))
-        )}
-        {isLoggedIn && userProfile && (
-          <>
-            <NavbarMenuItem>
-              <p className="text-sm font-semibold text-default-500 mt-4 mb-2">ACCOUNT</p>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                color="foreground"
-                className="w-full"
-                href="/profile"
-                size="lg"
-              >
-                My Profile
-              </Link>
-            </NavbarMenuItem>
-            <NavbarMenuItem>
-              <Link
-                color="danger"
-                className="w-full"
-                href="/logout"
-                size="lg"
-              >
-                Log Out
-              </Link>
-            </NavbarMenuItem>
-          </>
-        )}
-      </NavbarMenu>
-    </Navbar>
+          {isLoggedIn && userName ? (
+            <Link href="/profile" style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              background: 'var(--idx-fg)',
+              color: 'var(--idx-bg)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: 12,
+              fontFamily: 'var(--font-geist-mono)',
+              textDecoration: 'none',
+              flexShrink: 0,
+            }}>
+              {initials(userName)}
+            </Link>
+          ) : (
+            <Link href="/login" style={{
+              padding: '8px 16px',
+              background: 'var(--idx-fg)',
+              color: 'var(--idx-bg)',
+              fontSize: 12,
+              fontFamily: 'var(--font-geist-mono)',
+              textDecoration: 'none',
+              letterSpacing: '0.06em',
+              whiteSpace: 'nowrap',
+            }}>
+              SIGN IN
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }

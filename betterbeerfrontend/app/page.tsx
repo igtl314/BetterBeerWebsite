@@ -1,6 +1,7 @@
 import { Store } from "@/types/store";
 import { fetchStores } from "./_actions/stores";
 import IndexFooter from "./_compoments/IndexFooter";
+import MobileTopBar from "./_compoments/MobileTopBar";
 import Link from "next/link";
 
 export default async function Home() {
@@ -12,125 +13,214 @@ export default async function Home() {
     // show empty state below
   }
 
-  // Group by city if available (our Store type only has id + name for now)
-  // Show stores in a flat grid
   return (
     <main>
-      {/* Hero */}
-      <section style={{
-        padding: '40px 56px 48px',
-        borderBottom: '1px solid var(--idx-line)',
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 64,
-      }}>
-        <div>
-          <div style={{
-            fontFamily: 'var(--font-geist-mono)',
-            fontSize: 10,
-            letterSpacing: '0.14em',
-            textTransform: 'uppercase',
-            color: 'var(--idx-fg-dim)',
-          }}>
-            SE · Systembolaget · Beer Index
+      {/* ── Desktop layout ──────────────────────────────── */}
+      <div className="desk-only">
+        {/* Hero */}
+        <section style={{
+          padding: '40px 56px 48px',
+          borderBottom: '1px solid var(--idx-line)',
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: 64,
+        }}>
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 10,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'var(--idx-fg-dim)',
+            }}>
+              SE · Systembolaget · Beer Index
+            </div>
+            <h1 style={{
+              fontWeight: 500,
+              letterSpacing: '-0.045em',
+              fontSize: 'clamp(56px, 6.5vw, 96px)',
+              lineHeight: 0.92,
+              margin: '16px 0 0',
+              fontFeatureSettings: '"ss01","cv11"',
+            }}>
+              The index of{' '}
+              <span style={{ color: 'var(--idx-accent)' }}>good</span>
+              <br />beer in Sweden.
+            </h1>
           </div>
-          <h1 style={{
-            fontWeight: 500,
-            letterSpacing: '-0.045em',
-            fontSize: 'clamp(56px, 6.5vw, 96px)',
-            lineHeight: 0.92,
-            margin: '16px 0 0',
-            fontFeatureSettings: '"ss01","cv11"',
-          }}>
-            The index of{' '}
-            <span style={{ color: 'var(--idx-accent)' }}>good</span>
-            <br />beer in Sweden.
-          </h1>
-        </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-          <p style={{
-            fontSize: 18,
-            lineHeight: 1.5,
-            color: 'var(--idx-fg-dim)',
-            maxWidth: 480,
-            margin: 0,
-          }}>
-            Live stock and prices from{' '}
-            {stores.length > 0 ? stores.length : '—'} Systembolaget stores, ranked by APK — alkohol per krona — so you find what&apos;s worth the trip.
-          </p>
+          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+            <p style={{
+              fontSize: 18,
+              lineHeight: 1.5,
+              color: 'var(--idx-fg-dim)',
+              maxWidth: 480,
+              margin: 0,
+            }}>
+              Live stock and prices from{' '}
+              {stores.length > 0 ? stores.length : '—'} Systembolaget stores, ranked by APK — alkohol per krona — so you find what&apos;s worth the trip.
+            </p>
+            <div style={{
+              display: 'flex',
+              gap: 36,
+              marginTop: 32,
+              paddingTop: 24,
+              borderTop: '1px solid var(--idx-line)',
+            }}>
+              <StatCell value={stores.length > 0 ? String(stores.length) : '—'} label="Stores" />
+              <StatCell value="APK" label="Ranked by value" accent />
+              <StatCell value="Live" label="Stock data" />
+            </div>
+          </div>
+        </section>
+
+        {/* Store directory */}
+        <section style={{ padding: '48px 56px 80px' }}>
           <div style={{
             display: 'flex',
-            gap: 36,
-            marginTop: 32,
-            paddingTop: 24,
-            borderTop: '1px solid var(--idx-line)',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginBottom: 28,
           }}>
-            <StatCell value={stores.length > 0 ? String(stores.length) : '—'} label="Stores" />
-            <StatCell value="APK" label="Ranked by value" accent />
-            <StatCell value="Live" label="Stock data" />
+            <h2 style={{
+              fontWeight: 500,
+              letterSpacing: '-0.045em',
+              fontSize: 48,
+              margin: 0,
+              fontFeatureSettings: '"ss01","cv11"',
+            }}>
+              Browse by store
+            </h2>
+            <div style={{
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 10,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: 'var(--idx-fg-dim)',
+            }}>
+              {stores.length} stores
+            </div>
           </div>
-        </div>
-      </section>
 
-      {/* Store directory */}
-      <section style={{ padding: '48px 56px 80px' }}>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'baseline',
-          marginBottom: 28,
+          {stores.length === 0 ? (
+            <div style={{
+              padding: '80px 0',
+              textAlign: 'center',
+              color: 'var(--idx-fg-dim)',
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              borderTop: '1px solid var(--idx-line)',
+            }}>
+              NO STORES AVAILABLE · CHECK BACKEND CONNECTION
+            </div>
+          ) : (
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              borderTop: '1px solid var(--idx-line-strong)',
+              borderLeft: '1px solid var(--idx-line)',
+            }}>
+              {stores.map(s => (
+                <StoreCell key={s.id} store={s} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <IndexFooter />
+      </div>
+
+      {/* ── Mobile layout ───────────────────────────────── */}
+      <div className="mob-only mob-page">
+        <MobileTopBar />
+
+        {/* Hero */}
+        <section style={{
+          padding: '24px 20px 16px',
+          borderBottom: '1px solid var(--idx-line)',
         }}>
-          <h2 style={{
-            fontWeight: 500,
-            letterSpacing: '-0.045em',
-            fontSize: 48,
-            margin: 0,
-            fontFeatureSettings: '"ss01","cv11"',
-          }}>
-            Browse by store
-          </h2>
           <div style={{
             fontFamily: 'var(--font-geist-mono)',
             fontSize: 10,
-            letterSpacing: '0.14em',
+            letterSpacing: '0.16em',
             textTransform: 'uppercase',
             color: 'var(--idx-fg-dim)',
           }}>
-            {stores.length} stores
+            SE · SYSTEMBOLAGET · BEER INDEX
           </div>
+          <h1 style={{
+            fontSize: 40,
+            margin: '10px 0 0',
+            lineHeight: 0.96,
+            fontWeight: 500,
+            letterSpacing: '-0.035em',
+            fontFeatureSettings: '"ss01","cv11"',
+          }}>
+            The{' '}
+            <span style={{ color: 'var(--idx-accent)' }}>good</span>
+            {' '}beer<br />index of Sweden.
+          </h1>
+          <p style={{ marginTop: 12, fontSize: 13, color: 'var(--idx-fg-dim)', lineHeight: 1.5, margin: '12px 0 0' }}>
+            {stores.length > 0 ? stores.length : '—'} stores · sorted by APK
+          </p>
+        </section>
+
+        {/* Stats strip */}
+        <div
+          className="mob-stats-strip"
+          style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}
+        >
+          <MobileStatCell n={stores.length > 0 ? String(stores.length) : '—'} label="stores" />
+          <MobileStatCell n="APK" label="ranked by" accent />
+          <MobileStatCell n="Live" label="stock data" />
         </div>
 
-        {stores.length === 0 ? (
+        {/* Stores list */}
+        <section style={{ padding: '20px 20px 0' }}>
           <div style={{
-            padding: '80px 0',
-            textAlign: 'center',
-            color: 'var(--idx-fg-dim)',
-            fontFamily: 'var(--font-geist-mono)',
-            fontSize: 11,
-            letterSpacing: '0.1em',
-            borderTop: '1px solid var(--idx-line)',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'baseline',
+            marginBottom: 12,
           }}>
-            NO STORES AVAILABLE · CHECK BACKEND CONNECTION
+            <h2 style={{
+              fontSize: 22,
+              margin: 0,
+              fontWeight: 500,
+              letterSpacing: '-0.02em',
+              fontFeatureSettings: '"ss01","cv11"',
+            }}>Browse stores</h2>
+            <span style={{
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 10,
+              color: 'var(--idx-fg-dim)',
+              letterSpacing: '0.1em',
+              textTransform: 'uppercase',
+            }}>{stores.length}</span>
           </div>
-        ) : (
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            borderTop: '1px solid var(--idx-line-strong)',
-            borderLeft: '1px solid var(--idx-line)',
-          }}>
-            {stores.map(s => (
-              <StoreCell key={s.id} store={s} />
-            ))}
-          </div>
-        )}
-      </section>
 
-      <IndexFooter />
+          {stores.length === 0 ? (
+            <div style={{
+              padding: '40px 0',
+              textAlign: 'center',
+              fontFamily: 'var(--font-geist-mono)',
+              fontSize: 11,
+              letterSpacing: '0.1em',
+              color: 'var(--idx-fg-dim)',
+            }}>
+              NO STORES · CHECK BACKEND
+            </div>
+          ) : (
+            stores.map(s => <MobileStoreRow key={s.id} store={s} />)
+          )}
+        </section>
+      </div>
     </main>
   );
 }
+
+/* ── Desktop sub-components ──────────────────────────────── */
 
 function StatCell({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
   return (
@@ -177,11 +267,7 @@ function StoreCell({ store }: { store: Store }) {
         transition: 'background 0.1s',
       }}
     >
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'baseline',
-      }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
         <div style={{
           fontWeight: 500,
           letterSpacing: '-0.03em',
@@ -190,13 +276,7 @@ function StoreCell({ store }: { store: Store }) {
         }}>
           {store.name}
         </div>
-        <div style={{
-          fontSize: 18,
-          color: 'var(--idx-accent)',
-          fontWeight: 600,
-        }}>
-          →
-        </div>
+        <div style={{ fontSize: 18, color: 'var(--idx-accent)', fontWeight: 600 }}>→</div>
       </div>
       <div style={{
         fontFamily: 'var(--font-geist-mono)',
@@ -206,6 +286,63 @@ function StoreCell({ store }: { store: Store }) {
       }}>
         Store #{store.id}
       </div>
+    </Link>
+  );
+}
+
+/* ── Mobile sub-components ───────────────────────────────── */
+
+function MobileStatCell({ n, label, accent }: { n: string; label: string; accent?: boolean }) {
+  return (
+    <div style={{ background: 'var(--idx-bg)', padding: '12px 14px' }}>
+      <div style={{
+        fontFamily: 'var(--font-geist-mono)',
+        fontSize: 18,
+        fontWeight: 500,
+        fontVariantNumeric: 'tabular-nums',
+        color: accent ? 'var(--idx-accent)' : 'var(--idx-fg)',
+      }}>{n}</div>
+      <div style={{
+        fontFamily: 'var(--font-geist-mono)',
+        fontSize: 9,
+        letterSpacing: '0.12em',
+        textTransform: 'uppercase',
+        color: 'var(--idx-fg-dim)',
+        marginTop: 3,
+      }}>{label}</div>
+    </div>
+  );
+}
+
+function MobileStoreRow({ store }: { store: Store }) {
+  return (
+    <Link
+      href={`/stores/${store.id}`}
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '1fr auto',
+        alignItems: 'center',
+        gap: 12,
+        padding: '14px 0',
+        borderBottom: '1px solid var(--idx-line)',
+        textDecoration: 'none',
+        color: 'inherit',
+      }}
+    >
+      <div>
+        <div style={{ fontSize: 16, fontWeight: 500, letterSpacing: '-0.01em' }}>{store.name}</div>
+        <div style={{
+          fontFamily: 'var(--font-geist-mono)',
+          fontSize: 10,
+          color: 'var(--idx-fg-faint)',
+          marginTop: 3,
+        }}>
+          Butik {store.id}
+        </div>
+      </div>
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <path d="M6 3l5 5-5 5" stroke="var(--idx-fg-dim)" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
     </Link>
   );
 }

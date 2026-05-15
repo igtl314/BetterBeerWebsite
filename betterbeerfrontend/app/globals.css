@@ -38,3 +38,36 @@ html, body {
 .idx-nav-link:hover {
   background: var(--idx-bg2);
 }
+
+/* ── Responsive layout ──────────────────────────────────── */
+.mob-only       { display: none; }
+.mob-only-flex  { display: none; }
+.mob-only-grid  { display: none; }
+
+@media (max-width: 639px) {
+  .mob-only       { display: block; }
+  .mob-only-flex  { display: flex; }
+  .mob-only-grid  { display: grid; }
+  .desk-only      { display: none !important; }
+
+  /* bottom padding for fixed tab bar + iOS home indicator */
+  .mob-page { padding-bottom: 90px; }
+
+  /* horizontally-scrollable chip row */
+  .mob-chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .mob-chips::-webkit-scrollbar { display: none; }
+
+  /* stats grid inside a 1-px gap grid */
+  .mob-stats-strip {
+    display: grid;
+    gap: 1px;
+    background: var(--idx-line);
+    border-bottom: 1px solid var(--idx-line);
+  }
+}

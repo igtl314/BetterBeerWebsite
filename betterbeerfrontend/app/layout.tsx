@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Providers from "./providers";
 import NavbarWrapper from "./_compoments/NavbarWrapper";
+import MobileTabBar from "./_compoments/MobileTabBar";
 import "./globals.css";
 
 
@@ -32,8 +33,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <NavbarWrapper />
+          <div className="desk-only"><NavbarWrapper /></div>
           {children}
+          <MobileTabBar />
         </Providers>
       </body>
     </html>

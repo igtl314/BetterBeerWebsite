@@ -19,3 +19,11 @@ export type StockInfoWithProduct = StockInfo & {
 export type StoreWithStockInfo = Store & {
   stockInfo: StockInfoWithProduct[];
 };
+
+export type StoreLocation = Store & {
+  address: string | null;
+  city: string | null;
+  latitude: number;
+  longitude: number;
+  openToday: string | null;
+};

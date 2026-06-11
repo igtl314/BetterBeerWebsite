@@ -70,7 +70,11 @@ func FetchStockInfo(product Product, headers *http.Header) StockInfo {
 		fmt.Println("Error unmarshalling JSON:", err)
 		return defaultStockResponse
 	}
-	StockResponse.Shelf = StockResponse.Shelf[:5]
+	if StockResponse.Shelf == "" {
+		StockResponse.Shelf = "-"
+	} else if len(StockResponse.Shelf) > 5 {
+		StockResponse.Shelf = StockResponse.Shelf[:5]
+	}
 
 	return StockResponse
 }

@@ -63,7 +63,7 @@ export default function MobileTabBar() {
 
   return (
     <div
-      className="mob-only"
+      className="sm:hidden"
       style={{
         position: 'fixed',
         bottom: 0,

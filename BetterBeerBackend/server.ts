@@ -6,6 +6,8 @@ import {
     deleteStore,
     getProductsInStock,
     getProductById,
+    getAllProducts,
+    searchProducts,
     upsertProduct,
     deleteProduct,
     setProductStock,
@@ -18,6 +20,8 @@ import {
 } from './storehandler';
 
 import { type Product, type StockInfo } from './types';
+import { verifySession } from './auth';
+import { fetchSystembolagetStock } from './systembolaget';
 
 // Initialize Prisma client
 
@@ -117,7 +121,34 @@ const app = new Elysia()
 
     // Product routes
     .group('/products', app => app
-        // Get all products by category
+        // List products — supports ?search=, ?orderBy=, ?direction=, ?limit=
+        .get('/', async ({ query }) => {
+            try {
+                const limit = Math.min(Math.max(Number(query.limit) || 100, 1), 500);
+                const orderByWhitelist = ['ProductApk', 'ProductPrice', 'ProductName', 'ProductAlcohol', 'ProductVolume'];
+                const orderBy = orderByWhitelist.includes(query.orderBy ?? '') ? query.orderBy! : 'ProductApk';
+                const direction = query.direction === 'asc' ? 'asc' : 'desc';
+
+                const products = query.search
+                    ? await searchProducts(query.search, limit)
+                    : await getAllProducts({ orderBy, orderDirection: direction, limit });
+
+                return new Response(JSON.stringify(products), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch (error) {
+                console.error("Error listing products:", error);
+                return new Response('Internal server error', { status: 500 });
+            }
+        }, {
+            query: t.Object({
+                search: t.Optional(t.String()),
+                orderBy: t.Optional(t.String()),
+                direction: t.Optional(t.String()),
+                limit: t.Optional(t.String()),
+            })
+        })
         // Get specific product by ID with stock information
         .get('/:id', async ({ params }) => {
             try {
@@ -191,7 +222,7 @@ const app = new Elysia()
         .post('/', async ({ body }: { body: StockInfo }) => {
             try {
                 const stockInfo = await setProductStock(body);
-                return new Response(JSON.stringify(stockInfo), { 
+                return new Response(JSON.stringify(stockInfo), {
                     status: 201,
                     headers: { 'Content-Type': 'application/json' }
                 });
@@ -206,9 +237,53 @@ const app = new Elysia()
                 Location: t.Optional(t.String())
             })
         })
+        // Logged-in user refreshes stock for a single product@store from Systembolaget
+        .post('/refresh', async ({ body, cookie }: { body: { StoreId: number; ProductId: number }; cookie: Record<string, { value?: string } | undefined> }) => {
+            const user = await verifySession(cookie);
+            if (!user) {
+                return new Response('Unauthorized', { status: 401 });
+            }
+            try {
+                const fresh = await fetchSystembolagetStock(body.StoreId, body.ProductId);
+                const stockInfo = await setProductStock({
+                    StoreId: body.StoreId,
+                    ProductId: body.ProductId,
+                    Stock: fresh.stock,
+                    Location: fresh.shelf,
+                });
+                return new Response(JSON.stringify(stockInfo), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' },
+                });
+            } catch (error) {
+                console.error('Manual stock refresh failed:', error);
+                return new Response('Failed to refresh stock', { status: 502 });
+            }
+        }, {
+            body: t.Object({
+                StoreId: t.Number(),
+                ProductId: t.Number(),
+            })
+        })
     )
     // User routes
     .group('/users', app => app
+        // Get the logged-in user (with favorites) from the session cookie
+        .get('/me', async ({ cookie }: { cookie: Record<string, { value?: string } | undefined> }) => {
+            const sessionUser = await verifySession(cookie);
+            if (!sessionUser) {
+                return new Response('Unauthorized', { status: 401 });
+            }
+            try {
+                const user = await getUserById(sessionUser.id);
+                return new Response(JSON.stringify(user), {
+                    status: 200,
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch (error) {
+                return new Response('Internal server error', { status: 500 });
+            }
+        })
         // Get user by ID
         .get('/:id', async ({ params }) => {
             try {
@@ -335,7 +410,7 @@ const app = new Elysia()
         params: t.Object({ filename: t.String() })
     })
     // Start the server
-    .listen(3000);
+    .listen(Number(process.env.PORT) || 3000);
 
 console.log(`🦊 Elysia server is running at ${app.server?.hostname}:${app.server?.port}`);
 

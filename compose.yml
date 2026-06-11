@@ -7,8 +7,8 @@ services:
       - shared-data:/app/images:ro
     ports:
       - "3005:3000"
-    # environment:
-    #   - ENV_VAR=value
+    environment:
+      - AUTH_SECRET=${AUTH_SECRET}
   data-collector:
     build: ./goDataCollection # Uses your Dockerfile
     container_name: goDataCollection

@@ -2,30 +2,20 @@
 
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
+import StoreSearch from './StoreSearch';
 
 interface StoreFilterBarProps {
   categories: { label: string; count: number }[];
   totalCount: number;
   activeCategory: string;
-  activeSort: string;
   inStockOnly: boolean;
-  storeId: string;
 }
-
-const SORT_OPTIONS = [
-  { value: 'apk', label: 'APK ↓' },
-  { value: 'price', label: 'Price ↑' },
-  { value: 'abv', label: 'ABV ↓' },
-  { value: 'name', label: 'Name' },
-];
 
 export default function StoreFilterBar({
   categories,
   totalCount,
   activeCategory,
-  activeSort,
   inStockOnly,
-  storeId,
 }: StoreFilterBarProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -43,17 +33,15 @@ export default function StoreFilterBar({
   }, [pathname, searchParams]);
 
   return (
-    <div style={{
-      padding: '16px 56px',
-      borderBottom: '1px solid var(--idx-line)',
-      background: 'var(--idx-bg)',
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      gap: 16,
-    }}>
-      {/* Category chips */}
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+    <div
+      className="p-[12px_20px] flex flex-col gap-3 sm:p-[16px_56px] sm:flex-row sm:justify-between sm:items-center sm:gap-4"
+      style={{
+        borderBottom: '1px solid var(--idx-line)',
+        background: 'var(--idx-bg)',
+      }}
+    >
+      {/* Category chips — horizontally scrollable on mobile, wrap on desktop */}
+      <div className="mob-chips sm:flex-wrap sm:!overflow-visible">
         {/* All chip */}
         <ChipLink
           label={`All · ${totalCount}`}
@@ -73,7 +61,9 @@ export default function StoreFilterBar({
       </div>
 
       {/* Right controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+      <div
+        className="flex items-center justify-between gap-4 sm:justify-end sm:flex-shrink-0"
+      >
         {/* In stock toggle */}
         <label style={{
           display: 'flex',
@@ -118,40 +108,8 @@ export default function StoreFilterBar({
           </button>
         </label>
 
-        {/* Sort */}
-        <label style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{
-            fontFamily: 'var(--font-geist-mono)',
-            fontSize: 10,
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            color: 'var(--idx-fg-dim)',
-          }}>
-            Sort:
-          </span>
-          <select
-            value={activeSort}
-            onChange={e => router.push(buildUrl({ sort: e.target.value }))}
-            style={{
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 12,
-              padding: '5px 10px',
-              background: 'transparent',
-              border: '1px solid var(--idx-line)',
-              color: 'var(--idx-fg)',
-              cursor: 'pointer',
-              appearance: 'none',
-              paddingRight: 24,
-              backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235b574d' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E")`,
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'right 8px center',
-            }}
-          >
-            {SORT_OPTIONS.map(o => (
-              <option key={o.value} value={o.value}>{o.label}</option>
-            ))}
-          </select>
-        </label>
+        {/* Search */}
+        <StoreSearch />
       </div>
     </div>
   );

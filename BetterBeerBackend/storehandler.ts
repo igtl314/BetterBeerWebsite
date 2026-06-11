@@ -9,17 +9,19 @@ const prisma = new PrismaClient();
  * Get all products with optional filtering
  */
 export async function getAllProducts({
-    orderBy = 'productName',
+    orderBy = 'ProductName',
     orderDirection = 'asc',
     country = '',
     minAlcohol = 0,
     maxAlcohol = 100,
+    limit = undefined,
 }: {
     orderBy?: string;
     orderDirection?: 'asc' | 'desc';
     country?: string;
     minAlcohol?: number;
     maxAlcohol?: number;
+    limit?: number;
 } = {}) {
     return prisma.product.findMany({
         where: {
@@ -30,6 +32,7 @@ export async function getAllProducts({
         orderBy: {
             [orderBy]: orderDirection,
         },
+        ...(limit && { take: limit }),
     });
 }
 
@@ -72,7 +75,7 @@ export async function deleteProduct(id: number) {
 /**
  * Search products by name
  */
-export async function searchProducts(searchTerm: string) {
+export async function searchProducts(searchTerm: string, limit = 20) {
     return prisma.product.findMany({
         where: {
             OR: [
@@ -80,6 +83,8 @@ export async function searchProducts(searchTerm: string) {
                 { ProductNameThin: { contains: searchTerm } },
             ],
         },
+        orderBy: { ProductApk: 'desc' },
+        take: limit,
     });
 }
 

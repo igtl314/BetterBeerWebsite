@@ -1,3 +1,13 @@
+import Link from 'next/link';
+
+function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="idx-footer-link" style={{ color: 'inherit', textDecoration: 'none' }}>
+      {children}
+    </Link>
+  );
+}
+
 export default function IndexFooter() {
   return (
     <footer style={{
@@ -37,8 +47,10 @@ export default function IndexFooter() {
           Browse
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, lineHeight: 1.6 }}>
-          <span>All stores</span>
-          <span>APK Index</span>
+          <FooterLink href="/stores">All stores</FooterLink>
+          <FooterLink href="/leaderboard">APK Index</FooterLink>
+          <FooterLink href="/map">Store map</FooterLink>
+          <FooterLink href="/compare">Compare beers</FooterLink>
         </div>
       </div>
 
@@ -54,8 +66,8 @@ export default function IndexFooter() {
           About
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, lineHeight: 1.6 }}>
-          <span>How APK works</span>
-          <span>Where data comes from</span>
+          <FooterLink href="/about#apk">How APK works</FooterLink>
+          <FooterLink href="/about#data">Where data comes from</FooterLink>
         </div>
       </div>
 

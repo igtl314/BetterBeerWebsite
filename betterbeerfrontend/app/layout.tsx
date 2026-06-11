@@ -33,7 +33,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Providers>
-          <div className="desk-only"><NavbarWrapper /></div>
+          <div className="hidden sm:block"><NavbarWrapper /></div>
           {children}
           <MobileTabBar />
         </Providers>

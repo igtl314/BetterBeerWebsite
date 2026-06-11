@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
+import GlobalSearch from './GlobalSearch';
 
 interface MobileTopBarProps {
   back?: string;
@@ -51,12 +52,7 @@ export default function MobileTopBar({ back, backHref = '/', right }: MobileTopB
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           {right ?? (
             <>
-              <div style={{ width: 32, height: 32, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--idx-fg-dim)' }}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5" />
-                  <path d="M11 11 14 14" stroke="currentColor" strokeLinecap="round" strokeWidth="1.5" />
-                </svg>
-              </div>
+              <GlobalSearch variant="icon" />
               <Link href="/profile" style={{
                 width: 32, height: 32,
                 background: 'var(--idx-fg)', color: 'var(--idx-bg)',

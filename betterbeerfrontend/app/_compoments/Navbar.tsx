@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import GlobalSearch from './GlobalSearch';
 
 interface NavbarProps {
   isLoggedIn?: boolean;
@@ -105,31 +106,7 @@ export default function Navbar({ isLoggedIn = false, userName }: NavbarProps) {
 
         {/* Right: search + account */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '9px 14px',
-            border: '1px solid var(--idx-line)',
-            fontSize: 13,
-            color: 'var(--idx-fg-dim)',
-            width: 260,
-            background: 'var(--idx-bg)',
-            cursor: 'default',
-          }}>
-            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" aria-hidden>
-              <circle cx="5.5" cy="5.5" r="4" stroke="currentColor" />
-              <path d="M9 9 12 12" stroke="currentColor" strokeLinecap="round" />
-            </svg>
-            <span style={{ flex: 1 }}>Search beers…</span>
-            <span style={{
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 10,
-              padding: '1px 5px',
-              background: 'var(--idx-bg3)',
-              color: 'var(--idx-fg)',
-            }}>⌘K</span>
-          </div>
+          <GlobalSearch variant="box" />
 
           {isLoggedIn && userName ? (
             <Link href="/profile" style={{

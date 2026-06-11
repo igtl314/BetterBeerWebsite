@@ -14,208 +14,184 @@ export default async function Home() {
   }
 
   return (
-    <main>
-      {/* ── Desktop layout ──────────────────────────────── */}
-      <div className="desk-only">
-        {/* Hero */}
-        <section style={{
+    <main className="pb-[90px] sm:pb-0">
+      <div className="sm:hidden"><MobileTopBar /></div>
+
+      {/* Hero — desktop */}
+      <section
+        className="hidden sm:grid sm:grid-cols-2 sm:gap-16"
+        style={{
           padding: '40px 56px 48px',
           borderBottom: '1px solid var(--idx-line)',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 64,
-        }}>
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 10,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: 'var(--idx-fg-dim)',
-            }}>
-              SE · Systembolaget · Beer Index
-            </div>
-            <h1 style={{
-              fontWeight: 500,
-              letterSpacing: '-0.045em',
-              fontSize: 'clamp(56px, 6.5vw, 96px)',
-              lineHeight: 0.92,
-              margin: '16px 0 0',
-              fontFeatureSettings: '"ss01","cv11"',
-            }}>
-              The index of{' '}
-              <span style={{ color: 'var(--idx-accent)' }}>good</span>
-              <br />beer in Sweden.
-            </h1>
-          </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
-            <p style={{
-              fontSize: 18,
-              lineHeight: 1.5,
-              color: 'var(--idx-fg-dim)',
-              maxWidth: 480,
-              margin: 0,
-            }}>
-              Live stock and prices from{' '}
-              {stores.length > 0 ? stores.length : '—'} Systembolaget stores, ranked by APK — alkohol per krona — so you find what&apos;s worth the trip.
-            </p>
-            <div style={{
-              display: 'flex',
-              gap: 36,
-              marginTop: 32,
-              paddingTop: 24,
-              borderTop: '1px solid var(--idx-line)',
-            }}>
-              <StatCell value={stores.length > 0 ? String(stores.length) : '—'} label="Stores" />
-              <StatCell value="APK" label="Ranked by value" accent />
-              <StatCell value="Live" label="Stock data" />
-            </div>
-          </div>
-        </section>
-
-        {/* Store directory */}
-        <section style={{ padding: '48px 56px 80px' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginBottom: 28,
-          }}>
-            <h2 style={{
-              fontWeight: 500,
-              letterSpacing: '-0.045em',
-              fontSize: 48,
-              margin: 0,
-              fontFeatureSettings: '"ss01","cv11"',
-            }}>
-              Browse by store
-            </h2>
-            <div style={{
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 10,
-              letterSpacing: '0.14em',
-              textTransform: 'uppercase',
-              color: 'var(--idx-fg-dim)',
-            }}>
-              {stores.length} stores
-            </div>
-          </div>
-
-          {stores.length === 0 ? (
-            <div style={{
-              padding: '80px 0',
-              textAlign: 'center',
-              color: 'var(--idx-fg-dim)',
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 11,
-              letterSpacing: '0.1em',
-              borderTop: '1px solid var(--idx-line)',
-            }}>
-              NO STORES AVAILABLE · CHECK BACKEND CONNECTION
-            </div>
-          ) : (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              borderTop: '1px solid var(--idx-line-strong)',
-              borderLeft: '1px solid var(--idx-line)',
-            }}>
-              {stores.map(s => (
-                <StoreCell key={s.id} store={s} />
-              ))}
-            </div>
-          )}
-        </section>
-
-        <IndexFooter />
-      </div>
-
-      {/* ── Mobile layout ───────────────────────────────── */}
-      <div className="mob-only mob-page">
-        <MobileTopBar />
-
-        {/* Hero */}
-        <section style={{
-          padding: '24px 20px 16px',
-          borderBottom: '1px solid var(--idx-line)',
-        }}>
+        }}
+      >
+        <div>
           <div style={{
             fontFamily: 'var(--font-geist-mono)',
             fontSize: 10,
-            letterSpacing: '0.16em',
+            letterSpacing: '0.14em',
             textTransform: 'uppercase',
             color: 'var(--idx-fg-dim)',
           }}>
-            SE · SYSTEMBOLAGET · BEER INDEX
+            SE · Systembolaget · Beer Index
           </div>
           <h1 style={{
-            fontSize: 40,
-            margin: '10px 0 0',
-            lineHeight: 0.96,
             fontWeight: 500,
-            letterSpacing: '-0.035em',
+            letterSpacing: '-0.045em',
+            fontSize: 'clamp(56px, 6.5vw, 96px)',
+            lineHeight: 0.92,
+            margin: '16px 0 0',
             fontFeatureSettings: '"ss01","cv11"',
           }}>
-            The{' '}
+            The index of{' '}
             <span style={{ color: 'var(--idx-accent)' }}>good</span>
-            {' '}beer<br />index of Sweden.
+            <br />beer in Sweden.
           </h1>
-          <p style={{ marginTop: 12, fontSize: 13, color: 'var(--idx-fg-dim)', lineHeight: 1.5, margin: '12px 0 0' }}>
-            {stores.length > 0 ? stores.length : '—'} stores · sorted by APK
-          </p>
-        </section>
-
-        {/* Stats strip */}
-        <div
-          className="mob-stats-strip"
-          style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}
-        >
-          <MobileStatCell n={stores.length > 0 ? String(stores.length) : '—'} label="stores" />
-          <MobileStatCell n="APK" label="ranked by" accent />
-          <MobileStatCell n="Live" label="stock data" />
         </div>
 
-        {/* Stores list */}
-        <section style={{ padding: '20px 20px 0' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+          <p style={{
+            fontSize: 18,
+            lineHeight: 1.5,
+            color: 'var(--idx-fg-dim)',
+            maxWidth: 480,
+            margin: 0,
+          }}>
+            Live stock and prices from{' '}
+            {stores.length > 0 ? stores.length : '—'} Systembolaget stores, ranked by APK — alkohol per krona — so you find what&apos;s worth the trip.
+          </p>
           <div style={{
+            display: 'flex',
+            gap: 36,
+            marginTop: 32,
+            paddingTop: 24,
+            borderTop: '1px solid var(--idx-line)',
+          }}>
+            <StatCell value={stores.length > 0 ? String(stores.length) : '—'} label="Stores" />
+            <StatCell value="APK" label="Ranked by value" accent />
+            <StatCell value="Live" label="Stock data" />
+          </div>
+        </div>
+      </section>
+
+      {/* Hero — mobile */}
+      <section
+        className="sm:hidden"
+        style={{
+          padding: '24px 20px 16px',
+          borderBottom: '1px solid var(--idx-line)',
+        }}
+      >
+        <div style={{
+          fontFamily: 'var(--font-geist-mono)',
+          fontSize: 10,
+          letterSpacing: '0.16em',
+          textTransform: 'uppercase',
+          color: 'var(--idx-fg-dim)',
+        }}>
+          SE · SYSTEMBOLAGET · BEER INDEX
+        </div>
+        <h1 style={{
+          fontSize: 40,
+          margin: '10px 0 0',
+          lineHeight: 0.96,
+          fontWeight: 500,
+          letterSpacing: '-0.035em',
+          fontFeatureSettings: '"ss01","cv11"',
+        }}>
+          The{' '}
+          <span style={{ color: 'var(--idx-accent)' }}>good</span>
+          {' '}beer<br />index of Sweden.
+        </h1>
+        <p style={{ marginTop: 12, fontSize: 13, color: 'var(--idx-fg-dim)', lineHeight: 1.5, margin: '12px 0 0' }}>
+          {stores.length > 0 ? stores.length : '—'} stores · sorted by APK
+        </p>
+      </section>
+
+      {/* Mobile stats strip */}
+      <div
+        className="sm:hidden grid grid-cols-3"
+        style={{
+          gap: 1,
+          background: 'var(--idx-line)',
+          borderBottom: '1px solid var(--idx-line)',
+        }}
+      >
+        <MobileStatCell n={stores.length > 0 ? String(stores.length) : '—'} label="stores" />
+        <MobileStatCell n="APK" label="ranked by" accent />
+        <MobileStatCell n="Live" label="stock data" />
+      </div>
+
+      {/* Store directory */}
+      <section className="px-5 pt-5 sm:px-14 sm:pt-12 sm:pb-20">
+        <div
+          className="mb-3 sm:mb-7"
+          style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'baseline',
-            marginBottom: 12,
+          }}
+        >
+          <h2 className="hidden sm:block" style={{
+            fontWeight: 500,
+            letterSpacing: '-0.045em',
+            fontSize: 48,
+            margin: 0,
+            fontFeatureSettings: '"ss01","cv11"',
           }}>
-            <h2 style={{
-              fontSize: 22,
-              margin: 0,
-              fontWeight: 500,
-              letterSpacing: '-0.02em',
-              fontFeatureSettings: '"ss01","cv11"',
-            }}>Browse stores</h2>
-            <span style={{
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 10,
-              color: 'var(--idx-fg-dim)',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-            }}>{stores.length}</span>
+            Browse by store
+          </h2>
+          <h2 className="sm:hidden" style={{
+            fontSize: 22,
+            margin: 0,
+            fontWeight: 500,
+            letterSpacing: '-0.02em',
+            fontFeatureSettings: '"ss01","cv11"',
+          }}>
+            Browse stores
+          </h2>
+          <div style={{
+            fontFamily: 'var(--font-geist-mono)',
+            fontSize: 10,
+            letterSpacing: '0.14em',
+            textTransform: 'uppercase',
+            color: 'var(--idx-fg-dim)',
+          }}>
+            <span className="hidden sm:inline">{stores.length} stores</span>
+            <span className="sm:hidden">{stores.length}</span>
           </div>
+        </div>
 
-          {stores.length === 0 ? (
-            <div style={{
-              padding: '40px 0',
-              textAlign: 'center',
-              fontFamily: 'var(--font-geist-mono)',
-              fontSize: 11,
-              letterSpacing: '0.1em',
-              color: 'var(--idx-fg-dim)',
-            }}>
-              NO STORES · CHECK BACKEND
+        {stores.length === 0 ? (
+          <div style={{
+            padding: '40px 0',
+            textAlign: 'center',
+            color: 'var(--idx-fg-dim)',
+            fontFamily: 'var(--font-geist-mono)',
+            fontSize: 11,
+            letterSpacing: '0.1em',
+          }}>
+            NO STORES · CHECK BACKEND
+          </div>
+        ) : (
+          <>
+            <div
+              className="hidden sm:grid sm:grid-cols-4"
+              style={{
+                borderTop: '1px solid var(--idx-line-strong)',
+                borderLeft: '1px solid var(--idx-line)',
+              }}
+            >
+              {stores.map(s => <StoreCell key={s.id} store={s} />)}
             </div>
-          ) : (
-            stores.map(s => <MobileStoreRow key={s.id} store={s} />)
-          )}
-        </section>
-      </div>
+            <div className="sm:hidden">
+              {stores.map(s => <MobileStoreRow key={s.id} store={s} />)}
+            </div>
+          </>
+        )}
+      </section>
+
+      <div className="hidden sm:block"><IndexFooter /></div>
     </main>
   );
 }
